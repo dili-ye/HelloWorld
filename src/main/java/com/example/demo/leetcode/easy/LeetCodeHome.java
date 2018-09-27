@@ -1,10 +1,10 @@
-package com.example.demo.leetcode;
+package com.example.demo.leetcode.easy;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
-public class Leetcode {
+public class LeetCodeHome {
     /**
      * 13. 罗马数字转整数
      */
@@ -137,25 +137,29 @@ public class Leetcode {
     }
 
     public static void main(String[] args) {
-        Leetcode leetcode=new Leetcode();
+        LeetCodeHome leetCodeHome=new LeetCodeHome();
+        //20
+        System.out.println(leetCodeHome.isValid("(){}{[()]}"));
+        //21
         ListNode l11=new ListNode(1);
         ListNode l1=l11;
         l1=l1.next=new ListNode(2);
         l1=l1.next=new ListNode(4);
         l1=l1.next=new ListNode(8);
-
         ListNode l22=new ListNode(1);
         ListNode l2=l22;
         l2=l2.next=new ListNode(3);
         l2=l2.next=new ListNode(4);
         l2=l2.next=new ListNode(5);
-
-        ListNode listNode = leetcode.mergeTwoLists(l11, l22);
+        ListNode listNode = leetCodeHome.mergeTwoLists(l11, l22);
         while (listNode!=null){
             int value=listNode.val;
             listNode=listNode.next;
             System.out.print(" "+value);
         }
+
+
+
     }
 }
 class ListNode {
