@@ -1,3 +1,2 @@
-# HelloWorld
-This is a simple example.
-This is a example too.
+# leetcode题目练习
+随手练习一些题目
