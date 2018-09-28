@@ -240,19 +240,19 @@ public class LeetCodeHome {
     public static void main(String[] args) {
         LeetCodeHome leetCodeHome=new LeetCodeHome();
         //53
-        int[] nums={-6, 2, 4, -7, 5, 3, 2, -1, 6, -9, 10, -2};
-        System.out.println(leetCodeHome.maxSubArray(nums));
+//        int[] nums={-6, 2, 4, -7, 5, 3, 2, -1, 6, -9, 10, -2};
+//        System.out.println(leetCodeHome.maxSubArray(nums));
         //38
 //        System.out.println(leetCodeHome.countAndSay(4));
         //20
 //        System.out.println(leetCodeHome.isValid("(){}{[()]}"));
         //21
-//        ListNode l11=new ListNode(1);
+//        ListNode l11=new ListNode(0);
 //        ListNode l1=l11;
 //        l1=l1.next=new ListNode(2);
 //        l1=l1.next=new ListNode(4);
 //        l1=l1.next=new ListNode(8);
-//        ListNode l22=new ListNode(1);
+//        ListNode l22=new ListNode(7);
 //        ListNode l2=l22;
 //        l2=l2.next=new ListNode(3);
 //        l2=l2.next=new ListNode(4);
@@ -264,6 +264,8 @@ public class LeetCodeHome {
 //            System.out.print(" "+value);
 //        }
     }
+
+
 }
 class ListNode {
     int val;
