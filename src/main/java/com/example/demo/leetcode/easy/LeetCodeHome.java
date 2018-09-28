@@ -168,10 +168,82 @@ public class LeetCodeHome {
         return str;
     }
 
+    /**
+     * 53. 最大子序和
+     * 给定一个整数数组 nums ，找到一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和
+     * */
+    public int maxSubArray(int[] nums) {
+//        int a=maxSub1(nums);//三层嵌套循环,效率最低
+        int a=maxSub3(nums);//双层嵌套循环,没加一次比较一次
+
+        return a;
+    }
+
+    /**
+     * 最大子序和方法三
+     * 动态规划
+     * */
+    private int maxSub3(int[] nums) {
+        int maxnum=nums[0];
+        int sum=0;
+        for(int i=0;i<nums.length;i++){
+            sum += nums[i];
+            if(sum>maxnum){
+                maxnum=sum;
+            }
+            if(sum<0){
+                sum=0;
+            }
+        }
+        return maxnum;
+    }
+
+    /**
+     * 最大子序和方法二
+     * 两层嵌套循环
+     * */
+    private int maxSub2(int[] nums) {
+        int maxnum=nums[0];
+        for(int i=0;i<nums.length;i++){
+            int sum=0;
+            for(int j=i;j<nums.length;j++){
+                sum+=nums[j];
+                if(sum>maxnum){
+                    maxnum=sum;
+                }
+            }
+        }
+        return maxnum;
+    }
+
+    /**
+     * 最大子序和方法一
+     * 效率最低三层嵌套循环
+     * */
+    private int maxSub1(int[] nums) {
+        int maxnum=nums[0];
+        for(int i=0;i<nums.length;i++){
+            for(int j=i;j<nums.length;j++){
+                int sum=0;
+                for(int k=i;k<=j;k++){
+                    sum+=nums[k];
+                }
+                if(sum>maxnum){
+                    maxnum=sum;
+                }
+            }
+        }
+        return maxnum;
+    }
+
+
     public static void main(String[] args) {
         LeetCodeHome leetCodeHome=new LeetCodeHome();
+        //53
+        int[] nums={-6, 2, 4, -7, 5, 3, 2, -1, 6, -9, 10, -2};
+        System.out.println(leetCodeHome.maxSubArray(nums));
         //38
-        System.out.println(leetCodeHome.countAndSay(4));
+//        System.out.println(leetCodeHome.countAndSay(4));
         //20
 //        System.out.println(leetCodeHome.isValid("(){}{[()]}"));
         //21
