@@ -136,30 +136,61 @@ public class LeetCodeHome {
         return heads.next;
     }
 
+    /**
+     * 38. 报数
+     * 报数序列是指一个整照其中的整数的顺序进数序列，按行报数，得到下一个数
+     * */
+    public String countAndSay(int n) {
+        String str="1";
+        if(n==1) {
+            return str;
+        }
+        for(int i=1;i<n;i++){
+            String result="";
+            int len=1;
+            char[] strArray=str.toCharArray();
+            if(strArray.length==1){
+                str="11";
+                continue;
+            }
+            for(int j=1;j<strArray.length;j++){
+                if(strArray[j]==strArray[j-1]){
+                    len++;
+                }else {
+                    result=result+len+""+strArray[j-1];
+                    len=1;
+                }
+                if(j==strArray.length-1)
+                    result=result+len+""+strArray[j];
+            }
+            str=result;
+        }
+        return str;
+    }
+
     public static void main(String[] args) {
         LeetCodeHome leetCodeHome=new LeetCodeHome();
+        //38
+        System.out.println(leetCodeHome.countAndSay(4));
         //20
-        System.out.println(leetCodeHome.isValid("(){}{[()]}"));
+//        System.out.println(leetCodeHome.isValid("(){}{[()]}"));
         //21
-        ListNode l11=new ListNode(1);
-        ListNode l1=l11;
-        l1=l1.next=new ListNode(2);
-        l1=l1.next=new ListNode(4);
-        l1=l1.next=new ListNode(8);
-        ListNode l22=new ListNode(1);
-        ListNode l2=l22;
-        l2=l2.next=new ListNode(3);
-        l2=l2.next=new ListNode(4);
-        l2=l2.next=new ListNode(5);
-        ListNode listNode = leetCodeHome.mergeTwoLists(l11, l22);
-        while (listNode!=null){
-            int value=listNode.val;
-            listNode=listNode.next;
-            System.out.print(" "+value);
-        }
-
-
-
+//        ListNode l11=new ListNode(1);
+//        ListNode l1=l11;
+//        l1=l1.next=new ListNode(2);
+//        l1=l1.next=new ListNode(4);
+//        l1=l1.next=new ListNode(8);
+//        ListNode l22=new ListNode(1);
+//        ListNode l2=l22;
+//        l2=l2.next=new ListNode(3);
+//        l2=l2.next=new ListNode(4);
+//        l2=l2.next=new ListNode(5);
+//        ListNode listNode = leetCodeHome.mergeTwoLists(l11, l22);
+//        while (listNode!=null){
+//            int value=listNode.val;
+//            listNode=listNode.next;
+//            System.out.print(" "+value);
+//        }
     }
 }
 class ListNode {
