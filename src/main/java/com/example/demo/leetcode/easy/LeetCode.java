@@ -185,4 +185,48 @@ public class LeetCode {
         }
         return min;
     }
+
+    /**
+     * 58. 最后一个单词的长度
+     * 给定一个仅包含大小写字母和空格 ' ' 的字符串，返回其最后一个单词的长度。
+     * 如果不存在最后一个单词，请返回 0 。
+     * */
+    public int lengthOfLastWord(String s) {
+        int len=0;
+        for(int i=s.length()-1;i>=0;i--){
+            if(s.charAt(i)!=' '){
+                len++;
+            }else if(s.charAt(i)==' '&&len!=0){
+                return len;
+            }
+        }
+        return len;
+    }
+
+    /**
+     * 66. 加一
+     * 给定一个由整数组成的非空数组所表示的非负整数，在该数的基础上加一。
+     * 最高位数字存放在数组的首位， 数组中每个元素只存储一个数字。
+     * 你可以假设除了整数 0 之外，这个整数不会以零开头。
+     * */
+    public int[] plusOne(int[] digits) {
+        int len=digits.length;
+        if(digits[len-1]<9){
+            digits[len-1]+=1;
+            return digits;
+        }else{
+            int chu=1;
+            for(int i=len-1;i>=0;i--){
+                int sum=digits[i]+chu;
+                if(sum<10){
+                    digits[i]=sum;
+                    return digits;
+                }
+                digits[i]=sum%10;
+            }
+            int [] result=new int[len+1];
+            result[0]=1;
+            return result;
+        }
+    }
 }
