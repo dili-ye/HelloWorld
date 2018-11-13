@@ -229,4 +229,60 @@ public class LeetCode {
             return result;
         }
     }
+
+    public String reverseWords(String s) {
+        String[] splits=s.split(" ");
+        StringBuilder sb=new StringBuilder();
+        for(String split:splits){
+            for(int i=split.length()-1;i>=0;i--){
+                sb.append(split.charAt(i));
+            }
+            sb.append(" ");
+        }
+        return sb.toString().trim();
+    }
+
+    public String reverseString(String s) {
+//        StringBuilder sb=new StringBuilder(s);
+//        sb.reverse();
+//        return sb.toString();
+        char [] schar=s.toCharArray();
+        int len=schar.length;
+        for(int i=0;i<=len/2;i++){
+            swap(schar ,i,len-i-1);
+        }
+        return new String(schar);
+    }
+
+    private void swap(char[] schar, int i, int i1) {
+        if(i<i1){
+            char temp=schar[i1];
+            schar[i1]=schar[i];
+            schar[i]=temp;
+        }
+
+    }
+    public boolean canWinNim(int n) {
+        return n%4!=0;
+    }
+
+    public int[] productExceptSelf(int[] nums) {
+        int [] l1=new int[nums.length];
+        l1[0]=1;
+        for(int i=1;i<nums.length;i++){
+            l1[i]=l1[i-1]*nums[i-1];
+        }
+
+        for(int i=nums.length-2,temp=nums[i+1];i>=0;i--){
+            l1[i]=l1[i]*temp;
+            temp=temp*nums[i];
+        }
+        return l1;
+    }
+
+    public static void main(String[] args) {
+        LeetCode l=new LeetCode();
+        l.productExceptSelf(new int[]{1,2,3,4});
+    }
+
 }
