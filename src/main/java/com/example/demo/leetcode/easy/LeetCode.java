@@ -1,7 +1,8 @@
 package com.example.demo.leetcode.easy;
 
-import java.util.HashMap;
-import java.util.Map;
+import sun.plugin2.main.server.ResultID;
+
+import java.util.*;
 
 public class LeetCode {
     /**
@@ -230,6 +231,10 @@ public class LeetCode {
         }
     }
 
+    /**
+     * 557. 反转字符串中的单词 III
+     * 给定一个字符串，你需要反转字符串中每个单词的字符顺序，同时仍保留空格和单词的初始顺序。
+     */
     public String reverseWords(String s) {
         String[] splits=s.split(" ");
         StringBuilder sb=new StringBuilder();
@@ -242,6 +247,10 @@ public class LeetCode {
         return sb.toString().trim();
     }
 
+    /**
+     * 344. 反转字符串
+     * 编写一个函数，其作用是将输入的字符串反转过来。
+     */
     public String reverseString(String s) {
 //        StringBuilder sb=new StringBuilder(s);
 //        sb.reverse();
@@ -262,10 +271,20 @@ public class LeetCode {
         }
 
     }
+
+    /**
+     * 292. Nim游戏
+     * 桌子上有一堆石头，每次你们轮流拿掉 1 - 3 块石头。 拿掉最后一块石头的人就是获胜者。你作为先手
+     * 每一步都是最优解。 编写一个函数，来判断你是否可以在给定石头数量的情况下赢得游戏。
+     */
     public boolean canWinNim(int n) {
         return n%4!=0;
     }
 
+    /**
+     * 238. 除自身以外数组的乘积
+     * 给定长度为 n 的整数数组 nums，其中 n > 1，返回输出数组 output ，其中 output[i] 等于 nums 中除 nums[i] 之外其余各元素的乘积。
+     */
     public int[] productExceptSelf(int[] nums) {
         int [] l1=new int[nums.length];
         l1[0]=1;
@@ -280,6 +299,139 @@ public class LeetCode {
         return l1;
     }
 
+
+    /**
+     * 132. 分割回文串 II
+     * 给定一个字符串 s，将 s 分割成一些子串，使每个子串都是回文串。
+     * 返回符合要求的最少分割次数。
+     *
+     * public int minCut(String s) {
+     *         if (s == null || s.length() == 0) {
+     *             return 0;
+     *         }
+     *
+     *         int len = s.length();
+     *         int[] cut = new int[len];
+     *         cut[0]=0;
+     *         for (int i = 1; i < len; i++) {
+     *             // int min = 1;
+     *             cut[i]=is_palindrome(s.substring(0,i+1))?0:i;
+     *             for (int j = i; j >= 1; j--) {
+     *                 if(is_palindrome(s.substring(j,i+1))){
+     *                     cut[i]=Math.min(cut[i],cut[j-1]+1);
+     *                 }
+     *             }
+     *         }
+     *         return  cut[s.length()-1];
+     *     }
+     *     public boolean is_palindrome(String s)
+     *     {
+     *         int begin=0;
+     *         int end=s.length()-1;
+     *         while(begin<end)
+     *         {
+     *             if(s.charAt(begin)!=s.charAt(end))
+     *                 return false;
+     *             begin++;
+     *             end--;
+     *         }
+     *         return true;
+     *     }
+     */
+    public int minCut(String s) {
+        if(s==null||s.length()==0){
+            return 0;
+        }
+        int len=s.length();
+        int[] result=new int[len];
+        result[0]=0;
+        for(int i=1;i<len;i++){
+            result[i]=isPalin(s.substring(0,i+1))?0:i;
+            for(int j=i;j>=1;j--){
+                if(isPalin(s.substring(j,i+1))){
+                    result[i]= Math.min(result[i],result[j-1]+1);
+                }
+            }
+        }
+        return result[s.length()-1];
+    }
+    private boolean isPalin(String s){
+        int start=0;
+        int end=s.length()-1;
+        while(start<end){
+            if(s.charAt(start)!=s.charAt(end)){
+                return false;
+            }
+            start++;
+            end--;
+        }
+        return true;
+    }
+
+    /**
+     * 863. 二叉树中所有距离为 K 的结点
+     * 给定一个二叉树（具有根结点 root）， 一个目标结点 target ，和一个整数值 K 。
+     *
+     * 返回到目标结点 target 距离为 K 的所有结点的值的列表。 答案可以以任何顺序返回
+     */
+
+    public List<Integer> distanceK(TreeNode root, TreeNode target, int K) {
+        Map<Integer ,List<Integer>> map=new HashMap<>();
+        map_add_node(root,null,map);
+        List<Integer> list=new ArrayList<>();
+        if(map.isEmpty()){
+            return list;
+        }
+        list.add(target.val);
+        Set<Integer> set=new HashSet<>(list);
+        for(int i=0;i<K;i++){
+            List<Integer> temp = new ArrayList<>();
+            for(Integer item:list){
+                List<Integer> integers=map.get(item);
+                for(Integer num:integers){
+                    if(!set.contains(num)){
+                        temp.add(num);
+                    }
+                }
+            }
+            list=new ArrayList<>(temp);
+            set.addAll(temp);
+        }
+        return list;
+    }
+    private void map_add_node(TreeNode child,TreeNode parent,Map<Integer ,List<Integer>> map){
+        if(child!=null && parent!=null){
+            if(map.containsKey(child.val)){
+                map.get(child.val).add(parent.val);
+            }else{
+                List<Integer> list=new ArrayList<>();
+                list.add(parent.val);
+                map.put(child.val,list);
+            }
+
+            if(map.containsKey(parent.val)){
+                map.get(parent.val).add(child.val);
+            }else{
+                List<Integer> list=new ArrayList<>();
+                list.add(child.val);
+                map.put(parent.val,list);
+            }
+        }
+
+        if(child.left!=null){
+            map_add_node(child.left,child,map);
+        }
+        if(child.right!=null){
+            map_add_node(child.right,child,map);
+        }
+
+    }
+    public class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+        TreeNode(int x) { val = x; }
+     }
     public static void main(String[] args) {
         LeetCode l=new LeetCode();
         l.productExceptSelf(new int[]{1,2,3,4});
