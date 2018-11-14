@@ -1,8 +1,8 @@
 package com.example.demo.leetcode.normal;
 
-import java.util.Calendar;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import sun.reflect.generics.tree.Tree;
+
+import java.util.*;
 
 public class LeetCode {
     /**
@@ -72,7 +72,54 @@ public class LeetCode {
         int day=c.get(Calendar.DAY_OF_MONTH);
         return lilvs(x,sumDay,mouth,year,day);
     }
+
+    /**
+     * 236. 二叉树的最近公共祖先
+     */
+    public static TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if(root==null || root.equals(p)||root.equals(q)){
+            return root;
+        }
+        TreeNode left=lowestCommonAncestor(root.left,p,q);
+        TreeNode right=lowestCommonAncestor(root.right,p,q);
+
+        if(left !=null && right!=null){
+            return root;
+        }else{
+            return left!=null?left:right;
+        }
+
+    }
+
+    class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+
+        TreeNode(int x) {
+            val = x;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return val==((TreeNode)obj).val;
+        }
+
+        @Override
+        public String toString() {
+            return val+"";
+        }
+    }
+
+
     public static void main(String[] args) {
-        System.out.println(lilv(10000,365));
+        LeetCode.TreeNode node=new LeetCode().new TreeNode(1);
+        LeetCode.TreeNode p=new LeetCode().new TreeNode(4);
+        LeetCode.TreeNode q=new LeetCode().new TreeNode(3);
+        node.left=new LeetCode().new TreeNode(2);
+        node.right=new LeetCode().new TreeNode(3);
+        node.left.right=new LeetCode().new TreeNode(4);
+
+        System.out.println(lowestCommonAncestor(node,p,q));
     }
 }

@@ -236,6 +236,15 @@ public class LeetCodeHome {
         return maxnum;
     }
 
+    /**
+     * 237. 删除链表中的节点
+     */
+    public void deleteNode(ListNode node) {
+        ListNode next = node.next;
+        int val = next.val;
+        node.next=next.next;
+        node.val=val;
+    }
 
     public static void main(String[] args) {
         LeetCodeHome leetCodeHome=new LeetCodeHome();
