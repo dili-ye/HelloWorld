@@ -1,5 +1,8 @@
 package com.work.demo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 class A{
     private D c=new D();
     public A(){
@@ -48,6 +51,9 @@ public class ConstructorDemo extends DDD{
     
     public static void main(String[] args) {
         new ConstructorDemo();
+//        List<? extends D> li =new ArrayList<DD>();
+//        li.add(new DD());
+//        li.add(new D());
     }
     
 }

@@ -112,6 +112,25 @@ public class LeetCode {
     }
 
 
+    /**
+     * 235. 二叉搜索树的最近公共祖先
+     */
+    public TreeNode lowestCommonAncestor1(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null || root == p || root == q)
+            return root;
+        TreeNode left;
+        TreeNode right;
+        if (p.val < root.val && q.val > root.val || p.val > root.val && q.val < root.val) {
+            return root;
+        }
+        if (p.val < root.val && q.val < root.val) {
+            return lowestCommonAncestor1(root.left, p, q);
+        } else {
+            return lowestCommonAncestor1(root.right, p, q);
+        }
+    }
+
+
     public static void main(String[] args) {
         LeetCode.TreeNode node=new LeetCode().new TreeNode(1);
         LeetCode.TreeNode p=new LeetCode().new TreeNode(4);
