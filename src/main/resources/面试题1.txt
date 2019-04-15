@@ -1,0 +1,275 @@
+﻿spring
+
+1.spring的注解和jdk的注解区分
+
+      java元注解:
+ 	@Documented 将此注解包含在 javadoc 中 ，它代表着此注解会被javadoc工具提取成文档
+	@Retention 表示在什么级别保存该注解信息。可选的参数值在枚举类型 RetentionPolicy 中
+	   RetentionPolicy.SOURCE 注解将被编译器丢弃 
+                   RetentionPolicy.CLASS 注解在class文件中可用，但会被VM丢弃 
+                   RetentionPolicy.RUNTIME VM将在运行期也保留注释，因此可以通过反射机制读取注解的信息
+	@Target 表示该注解用于什么地方，可能的值在枚举类 ElemenetType 
+	   ElemenetType.CONSTRUCTOR 构造器声明 
+          	   ElemenetType.FIELD 域声明（包括 enum 实例） 
+         	   ElemenetType.LOCAL_VARIABLE 局部变量声明
+       	   ElemenetType.ANNOTATION_TYPE 作用于注解量声明
+      	   ElemenetType.METHOD 方法声明
+       	   ElemenetType.PACKAGE 包声明 
+        	   ElemenetType.PARAMETER 参数声明 
+        	   ElemenetType.TYPE 类，接口（包括注解类型）或enum声明 
+ 	@Inherited 允许子类继承父类中的注解
+      spring常用注解:
+	@Component ：标准一个普通的spring Bean类。
+	@Repository：标注一个DAO组件类。
+	@Service：标注一个业务逻辑组件类。
+	@Controller：标注一个控制器组件类。
+	@Bean注解主要用于方法
+	@Scope注解定义该bean的作用域范围，譬如是singleton还是prototype等
+	@Configuration 来注解类表示类可以被 Spring 的 IoC 容器所使用，作为 bean 定义的资源
+	@RequestMapping ： 这个注解用于将url映射到整个处理类或者特定的处理请求的方法
+	@RequestParam ：将请求的参数绑定到方法中的参数上
+	@PathVariable ： 该注解用于方法修饰方法参数，会将修饰的方法参数变为可供使用的uri变量
+	@RequestBody ： @RequestBody是指方法参数应该被绑定到HTTP请求Body上
+	@ResponseBody:  在输出JSON格式的数据时，会经常用到
+	@RestController: 用来创建REST类型的控制器，同@Controller类型,避免了你重复的写@RequestMapping与@ResponseBody
+	@ModelAttribute ：可以作用在方法或方法参数上，当它作用在方法上时，标明该方法的目的是添加一个或多个模型属性
+      @Autowired是Spring的注解，@Resource是javax.annotation注解
+      @Autowired只按照Type 注入；@Resource默认按Name自动注入，也提供按照Type 注入
+
+2.spring的事务传播行为，a()嵌套调用b()时，ab的回滚策略
+
+	PROPAGATION_REQUIRED	如果当前没有事务，就新建一个事务，如果已经存在一个事务中，加入到这个事务中。这是最常见的选择。
+	PROPAGATION_SUPPORTS	支持当前事务，如果当前没有事务，就以非事务方式执行。
+	PROPAGATION_MANDATORY	使用当前的事务，如果当前没有事务，就抛出异常。
+	PROPAGATION_REQUIRES_NEW	新建事务，如果当前存在事务，把当前事务挂起。
+	PROPAGATION_NOT_SUPPORTED	以非事务方式执行操作，如果当前存在事务，就把当前事务挂起。
+	PROPAGATION_NEVER	以非事务方式执行，如果当前存在事务，则抛出异常。
+	PROPAGATION_NESTED	如果当前存在事务，则在嵌套事务内执行。如果当前没有事务，则执行与PROPAGATION_REQUIRED类似的操作。
+
+3.spring的service层是不是线程安全的，如果是，是怎么实现的
+
+  Spring在实现Service和DAO对象时，使用了ThreadLocal这个类
+  Spring中DAO和Service都是以单实例的bean形式存在，Spring通过ThreadLocal类将有状态的变量（例如数据库连接Connection）本地线程化，从而做到多线程状况下的安全。在一次请求响应的处理线程中， 该线程贯通展示、服务、数据持久化三层，通过ThreadLocal使得所有关联的对象引用到的都是同一个变量
+
+4.spring事务的实现原理
+
+a、划分处理单元——IOC
+ 
+  
+
+由于spring解决的问题是对单个数据库进行局部事务处理的，具体的实现首相用spring中的IOC划分了事务处理单元。
+  并且将对事务的各种配置放到了ioc容器中（设置事务管理器，设置事务的传播特性及隔离机制）。
+
+ 
+
+
+
+
+b、AOP拦截需要进行事务处理的类
+ 
+
+
+  Spring事务处理模块是通过AOP功能来实现声明式事务处理的，具体操作（比如事务实行的配置和读取，事务对象的抽象），
+  用TransactionProxyFactoryBean接口来使用AOP功能，生成proxy代理对象，通过TransactionInterceptor完成对代理方法的拦截，
+  将事务处理的功能编织到拦截的方法中。
+
+ 
+
+读取ioc容器事务配置属性，转化为spring事务处理需要的内部数据结构（TransactionAttributeSourceAdvisor），
+  转化为TransactionAttribute表示的数据对象。
+事务的基本原理 Spring事务的本质其实就是数据库对事务的支持，没有数据库的事务支持，spring是无法提供事务功能的
+对于纯JDBC操作数据库，想要用到事务，可以按照以下步骤进行:
+  1.获取连接 Connection con = DriverManager.getConnection() 
+  2.开启事务con.setAutoCommit(true/false); 
+  3.执行CRUD 
+  4.提交事务/回滚事务 con.commit() / con.rollback(); 
+  5.关闭连接 conn.close()
+使用Spring的事务管理功能后，我们可以不再写步骤 2 和 4 的代码，而是由Spirng 自动完成
+  1.配置文件开启注解驱动，在相关的类和方法上通过注解@Transactional标识。 
+  2.spring 在启动的时候会去解析生成相关的bean，这时候会查看拥有相关注解的类和方法，
+    并且为这些类和方法生成代理，并根据@Transaction的相关参数进行相关配置注入，
+    这样就在代理中为我们把相关的事务处理掉了（开启正常提交事务，异常回滚事务）。 
+  3.真正的数据库层的事务提交和回滚是通过bin log或者redo log实现的。
+
+5.看过spring的源码吗
+
+
+
+数据库
+
+1.为什么要用索引？为什么不给数据库的每个字段都建立索引。写出一个你平时项目运用索引的场景
+
+2.省市区的表创建、多部门（比如20个部门）的表创建（树形结构展现）
+
+
+jvm
+1.jvm oom的各种情况，以及解决方案
+
+  1).当应用程序试图向堆空间添加更多的数据，但堆却没有足够的空间来容纳这些数据时，
+  将会触发java.lang.OutOfMemoryError: Java heap space异常。
+  需要注意的是：即使有足够的物理内存可用，只要达到堆空间设置的大小限制，此异常仍然会被触发
+ 通过参数-Xmx和-XX:MaxPermSize设置
+  2).当应用程序花费超过98%的时间用来做GC并且回收了不到2%的堆内存时，
+  会抛出java.lang.OutOfMemoryError:GC overhead limit exceeded错误。
+  具体的表现就是你的应用几乎耗尽所有可用内存，并且GC多次均未能清理干净
+  3).java.lang.OutOfMemoryError: PermGen space错误的原因是：
+   太多的类或者太大的类被加载到permanent generation（持久代）
+  持久代主要存储的是每个类的信息，比如：
+   类加载器引用、运行时常量池（所有常量、字段引用、方法引用、属性）、
+   字段(Field)数据、方法(Method)数据、方法代码、方法字节码等等
+  4).元空间大小的要求取决于加载的类的数量以及这种类声明的大小。 
+   所以很容易看到java.lang.OutOfMemoryError: Metaspace主要原因：太多的类或太大的类加载到元空间。
+  Java8开始，Java中的内存模型发生了重大变化：引入了称为Metaspace的新内存区域，而删除了PermGen区域
+  5).出现java.lang.OutOfMemoryError:Unable to create new native thread就意味着Java应用程序已达到其可以启动线程数量的极限了
+  当JVM向OS请求创建一个新线程时，而OS却无法创建新的native线程时就会抛出Unable to create new native thread错误
+  6).当应用程序向JVM native heap请求分配内存失败并且native heap也即将耗尽时，JVM会抛出Out of swap space错误
+  7).遇到Requested array size exceeds VM limit错误时，意味着你的应用程序试图分配大于Java虚拟机可以支持的数组
+  该错误由JVM中的native code抛出。 JVM在为数组分配内存之前，会执行特定于平台的检查：分配的数据结构是否在此平台中是可寻址的
+
+2.说一下类的加载过程和双亲委派模型，实现自己的类加载器需要重写哪个方法
+
+多线程
+  jvm将类加载过程分成加载，连接，初始化三个阶段，其中连接阶段又细分为验证，准备，解析三个阶段
+  1.装载阶段主要是将java字节码以二进制的方式读入到jvm内存中，然后将二进制数据流按照字节码规范解析成jvm内部的运行时数据结构
+  2.验证是连接阶段的第一步，它主要是用于保证加载的字节码符合java语言的规范，并且不会给虚拟机带来危害。
+     比如验证这个类是不是符合字节码的格式、变量与方法是不是有重复、数据类型是不是有效、继承与实现是否合乎标准等
+     细分为4个阶段：文件格式验证（这一步会与装载阶段交叉进行），元数据验证，字节码验证，符号引用验证
+  3.准备阶段主要是为类的静态变量分配内存，并设置jvm默认的初始值。对于非静态的变量，则不会为它们分配内存
+  4.解析过程就是查找类的常量池中的类，字段，方法，接口的符号引用，将他们替换成直接引用的过程
+  5.初始化阶段是根据用户程序中的初始化语句为类的静态变量赋予正确的初始值
+  
+双亲委派模型工作过程是：
+  如果一个类加载器收到类加载的请求，它首先不会自己去尝试加载这个类，而是把这个请求委派给父类加载器完成。
+  每个类加载器都是如此，只有当父加载器在自己的搜索范围内找不到指定的类时（即ClassNotFoundException），子加载器才会尝试自己去加载
+
+findeClass:loadClass在父加载器无法加载类的时候，就会调用我们自定义的类加载器中的findeClass函数
+
+1.有一个磁盘类，里面有获取一个磁盘大小方法和对总磁盘大小进行加操作的方法。
+  现在有4个磁盘，要求你用四个线程获取到每个磁盘的大小，然后输出总磁盘的大小。
+（我用的是countDownLatch类，其实有很多种方法，比如原子类+volatile，
+  或者是用线程池+关闭线程池+同步等待线程池关闭，或者是线程池获取已完成任务数量）
+
+
+2.说一下concurrentHashMap
+
+ HashMap 底层是基于 数组 + 链表 组成的，不过在 jdk1.7 和 1.8 中具体实现稍有不同
+  ConcurrentHashMap 采用了分段锁技术，其中 Segment 继承于 ReentrantLock。
+ 不会像 HashTable 那样不管是 put 还是 get 操作都需要做同步处理，
+ 理论上 ConcurrentHashMap 支持 CurrencyLevel (Segment 数组数量)的线程并发。 
+ 每当一个线程占用锁访问一个 Segment 时，不会影响到其他的 Segment。
+ 1.8其中抛弃了原有的 Segment 分段锁，而采用了 CAS + synchronized 来保证并发安全性
+
+3.线程池的任务是怎样执行的，即创建线程的时机，主要考查线程池参数的理解
+
+  1.核心线程数corePoolSize：核心线程池数量。
+    提交一个任务的时候，会对线程池里面的当前存活线程数和这个corePoolSize进行比较，不同的情况会有不同的操作。
+
+  2.最大线程数maximumPoolSize：线程池所能创建的线程的最大的数量。
+
+  3.空闲线程的超时时间keepAliveTime：如果线程池当前线程数是大于corePoolSize，并且这些线程中是有空闲线程的，
+    也就是说这些线程没有在执行任务，那么空闲时间超过keepAliveTime时间，这些线程会被销毁，
+    直到当前线程数等于corePoolSize，这时即使有空闲线程并且超时了也不会进行线程销毁。
+
+  4.任务队列workQueue：这是一个阻塞队列，用于存储提交的任务。
+  5.
+线程工厂threadFactory：线程池会使用这个工厂类来创建线程，用户可以自己实现。
+  6.
+任务的拒绝处理handler（RejectedExecutionHandler）：在线程数已经达到了最大线程数，而且任务队列也满了过后，
+    提交的任务会使用这个handler来进行处理，用户也可以自己实现。默认是抛出一个异常RejectedExecutionException。
+
+
+4.使用wait、notify实现生产者消费者模式
+
+
+
+java基础
+
+1.thread的start方法和run方法在main线程里的运行时序，
+ 比如在thread的run方法里syso输出了一个world，main线程调用start方法后，
+ syso hello，输出顺序可能是哪些（需不需要考虑操作系统）
+
+
+2.字符流字节流判断
+
+字节流的抽象基流：InputStream和OutputStream
+字符流的抽象基流：Reader和Writer
+此四个类派生出来的子类名称都是以父类名作为子类名的后缀，以前缀为其功能；如InputStream子类FileInputStream；Reader子类FileReader
+
+3.说一下AQS
+
+AQS的全称为（AbstractQueuedSynchronizer），这个类在java.util.concurrent.locks包下面
+
+AQS是一个用来构建锁和同步器的框架，使用AQS能简单且高效地构造出应用广泛的大量的同步器，
+我们提到的ReentrantLock，Semaphore，ReentrantReadWriteLock，SynchronousQueue，FutureTask等等皆是基于AQS的
+1.AQS核心思想是，如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设置为锁定状态。
+如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制AQS是用CLH队列锁实现的，
+即将暂时获取不到锁的线程加入到队列中。
+
+4说一下java中的锁
+1.公平锁是指多个线程按照申请锁的顺序来获取锁,非公平锁是指多个线程获取锁的顺序并不是按照申请锁的顺序
+  有可能后申请的线程比先申请的线程优先获取锁。有可能，会造成优先级反转或者饥饿现象。
+ReentrantLock通过构造函数指定是否为公平锁, 默认是非公平锁,优点在于吞吐量比公平锁大
+2.可重入锁又名递归锁，是指在同一个线程在外层方法获取锁的时候，在进入内层方法会自动获取锁
+ReentrantLock是一个可重入锁 , Synchronized也是
+3.独享锁是指该锁一次只能被一个线程所持有。
+共享锁是指该锁可被多个线程所持有
+ReentrantLock是独享锁, ReadWriteLock是共享锁, 其读锁是共享锁, 写锁是独享锁
+独享锁/共享锁就是一种广义的说法，互斥锁/读写锁就是具体的实现。
+互斥锁在Java中的具体实现就是ReentrantLock
+读写锁在Java中的具体实现就是ReadWriteLock
+4.悲观锁认为对于同一个数据的并发操作，一定是会发生修改的，哪怕没有修改，也会认为修改。
+因此对于同一个数据的并发操作，悲观锁采取加锁的形式。悲观的认为，不加锁的并发操作一定会出问题。
+5.乐观锁则认为对于同一个数据的并发操作，是不会发生修改的。在更新数据的时候，
+会采用尝试更新，不断重新的方式更新数据。乐观的认为，不加锁的并发操作是没有事情的
+6.悲观锁适合写操作非常多的场景，乐观锁适合读操作非常多的场景，不加锁会带来大量的性能提升。
+悲观锁在Java中的使用，就是利用各种锁。
+乐观锁在Java中的使用，是无锁编程，常常采用的是CAS算法，典型的例子就是原子类，通过CAS自旋实现原子操作的更新
+7.分段锁,对于ConcurrentHashMap而言，其并发的实现就是通过分段锁的形式来实现高效的并发操作
+设计目的是细化锁的粒度，当操作不需要更新整个数组的时候，就仅仅针对数组中的一部分进行加锁操作
+8.偏向锁是指一段同步代码一直被一个线程所访问，那么该线程会自动获取锁。降低获取锁的代价。
+轻量级锁是指当锁是偏向锁的时候，被另一个线程所访问，偏向锁就会升级为轻量级锁，其他线程会通过自旋的形式尝试获取锁，不会阻塞，提高性能。
+重量级锁是指当锁为轻量级锁的时候，另一个线程虽然是自旋，但自旋不会一直持续下去，当自旋一定次数的时候，还没有获取到锁，就会进入阻塞，该锁膨胀为重量级锁。重量级锁会让其他申请的线程进入阻塞，性能降低
+9.自旋锁是指尝试获取锁的线程不会立即阻塞，而是采用循环的方式去尝试获取锁，这样的好处是减少线程上下文切换的消耗，缺点是循环会消耗CPU
+
+算法
+1.字符串反转   hello -> olleh
+我用的最简单的倒序输出+StringBuilder类
+网上方法很多，比如用length-i输出、二分查找思想的递归实现
+
+2.写一下二分查找
+
+
+框架
+1.hsf的原理、调用过程，说一下rpc
+
+其他
+
+• server启动时候向configserver注册
+
+• client启动时候向configserver请求list
+
+• client缓存list，发现不可用的server，从缓存中remove
+
+• configserver通过心跳包维护可用server的list
+
+• list有更新的时候，configserver通过带version的报文通知client更新
+
+
+1.你们的应用比较大，在流量比较大、并发量高的时候是怎样保证系统的性能和安全的？（一脸懵逼）
+
+2.说一下你觉得自己项目里的亮点（亮点就是没有亮点）
+
+
+3.tomcat的类加载器
+
+      1 使用bootstrap引导类加载器加载
+        加载JVM启动所需的类，以及标准扩展类（位于jre/lib/ext下）
+　　2 使用system系统类加载器加载
+        加载tomcat启动的类，比如bootstrap.jar，通常在catalina.bat或者catalina.sh中指定。位于CATALINA_HOME/bin下
+　　3 使用应用类加载器在WEB-INF/classes中加载
+　　4 使用应用类加载器在WEB-INF/lib中加载
+　　5 使用common类加载器在CATALINA_HOME/lib中加载
+       加载tomcat使用以及应用通用的一些类，位于CATALINA_HOME/lib下，比如servlet-api.jar
+违背了双亲委派原则, 1在系统目录中加载 --> 2在classes文件夹中加载--> 3在lib文件夹中加载 --> 4在common下通用类中加载
+
+4.在写数据库请求很多的情况下，怎样提升性能
